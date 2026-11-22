@@ -1,1 +1,1088 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VALOREM — Plataforma de Combate ao Desperdício Alimentício</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    @media print {
+      body * { visibility: hidden; }
+      #voucherPrintArea, #voucherPrintArea * { visibility: visible; }
+      #voucherPrintArea {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 24px;
+        background: white;
+      }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <header class="bg-emerald-900 text-white shadow-lg sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between py-4 gap-4">
+        <div class="flex items-center gap-3">
+          <div class="bg-emerald-500 text-emerald-950 p-2.5 rounded-xl font-extrabold shadow-inner">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-10h-1M4.34 12h-1m15.07 6.07-.7-.7M6.34 6.34l-.7-.7m12.02 0-.7.7M6.34 17.66l-.7.7M12 7a5 5 0 100 10 5 5 0 000-10z" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-2xl font-extrabold tracking-tight">VALOREM</span>
+              <span class="text-[11px] uppercase tracking-wider font-semibold bg-emerald-700/80 text-emerald-100 px-2 py-0.5 rounded-full border border-emerald-500/40">ODS 2 • 10 • 12</span>
+            </div>
+            <p class="text-xs text-emerald-200">Conexão solidária entre comércios e institutos sociais</p>
+          </div>
+        </div>
+
+        <!-- Navegação Principal -->
+        <nav class="flex flex-wrap gap-1.5 bg-emerald-950/60 p-1.5 rounded-xl border border-emerald-800">
+          <button onclick="switchTab('vitrine')" id="tab-vitrine" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 bg-emerald-500 text-emerald-950 shadow">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            Vitrine de Alimentos
+          </button>
+          <button onclick="switchTab('cadastrar')" id="tab-cadastrar" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 text-emerald-100 hover:bg-emerald-800/70">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Cadastrar Excedente
+          </button>
+          <button onclick="switchTab('reservas')" id="tab-reservas" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 text-emerald-100 hover:bg-emerald-800/70">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            Minhas Reservas
+            <span id="badgeReservas" class="bg-amber-400 text-slate-950 text-xs font-bold px-1.5 py-0.2 rounded-full">0</span>
+          </button>
+          <button onclick="switchTab('impacto')" id="tab-impacto" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 text-emerald-100 hover:bg-emerald-800/70">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            Painel de Impacto
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner de Contexto Extensão -->
+  <div class="bg-emerald-50 border-b border-emerald-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-emerald-900">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+        <span><strong>Protótipo Funcional (MVP):</strong> Excedentes alimentícios próprios para consumo com <strong>doação gratuita</strong> ou <strong>preço social</strong> exclusivo para ONGs e institutos.</span>
+      </div>
+      <div class="text-emerald-700 font-medium" id="headerCurrentDate"></div>
+    </div>
+  </div>
+
+  <!-- Conteúdo Principal -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- ==================== ABA 1: VITRINE DE ALIMENTOS ==================== -->
+    <section id="view-vitrine" class="space-y-6">
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Lotes Disponíveis para Resgate</h1>
+          <p class="text-slate-600 text-sm mt-1">Selecione um lote publicado pelos estabelecimentos parceiros, confira a data limite de retirada e gere o comprovante da sua instituição.</p>
+        </div>
+
+        <!-- Filtros -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="relative">
+            <input type="text" id="searchInput" oninput="renderVitrine()" placeholder="Buscar alimento, loja ou bairro..." class="w-full sm:w-64 pl-9 pr-4 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+
+          <select id="filterModality" onchange="renderVitrine()" class="px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-emerald-500 outline-none">
+            <option value="all">Todas as Modalidades</option>
+            <option value="doacao">Doação Gratuita (R$ 0,00)</option>
+            <option value="social">Preço Social Superbaixo</option>
+          </select>
+
+          <select id="filterCategory" onchange="renderVitrine()" class="px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-emerald-500 outline-none">
+            <option value="all">Todas as Categorias</option>
+            <option value="Hortifrúti">Hortifrúti</option>
+            <option value="Padaria">Padaria & Confeitaria</option>
+            <option value="Mercearia">Mercearia & Grãos</option>
+            <option value="Laticínios">Laticínios & Frios</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Grid de Cards -->
+      <div id="vitrineGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- ==================== ABA 2: CADASTRAR EXCEDENTE (COMÉRCIO) ==================== -->
+    <section id="view-cadastrar" class="hidden max-w-3xl mx-auto">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="bg-emerald-900 px-6 py-5 text-white">
+          <span class="text-xs font-semibold uppercase tracking-wider text-emerald-300">Área do Estabelecimento Parceiro</span>
+          <h2 class="text-xl sm:text-2xl font-bold mt-1">Publicar Lote de Excedente Alimentício</h2>
+          <p class="text-emerald-100 text-xs sm:text-sm mt-1">Cadastre alimentos próprios para consumo que não serão comercializados no fluxo tradicional, definindo a data limite e a janela de retirada.</p>
+        </div>
+
+        <form id="formCadastro" onsubmit="handleCreateItem(event)" class="p-6 space-y-5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nome do Estabelecimento *</label>
+              <input type="text" id="cadStore" required placeholder="Ex: Hortifrúti Vila Verde" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Bairro / Endereço de Retirada *</label>
+              <input type="text" id="cadAddress" required placeholder="Ex: Centro — Rua das Flores, 210" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Descrição do Alimento / Lote *</label>
+              <input type="text" id="cadTitle" required placeholder="Ex: Caixa Mista de Legumes e Verduras Frescas" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Categoria *</label>
+              <select id="cadCategory" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-emerald-500 outline-none">
+                <option value="Hortifrúti">Hortifrúti</option>
+                <option value="Padaria">Padaria & Confeitaria</option>
+                <option value="Mercearia">Mercearia & Grãos</option>
+                <option value="Laticínios">Laticínios & Frios</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Peso Total Estimado (kg) *</label>
+              <input type="number" id="cadWeight" required min="1" step="0.5" placeholder="Ex: 15" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Modalidade de Repasse *</label>
+              <select id="cadModality" onchange="togglePriceFields()" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-emerald-500 outline-none">
+                <option value="doacao">Doação Gratuita (100% Solidária)</option>
+                <option value="social">Preço Social Superbaixo (Custo Simbólico)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Campos de Preço Social -->
+          <div id="socialPriceBox" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase text-amber-900">Configuração de Preço Social</span>
+              <span id="discountPreview" class="text-xs font-bold bg-amber-200 text-amber-950 px-2.5 py-0.5 rounded-full">Desconto: 0%</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Valor Original de Mercado (R$) *</label>
+                <input type="number" id="cadOriginalPrice" min="1" step="0.01" oninput="updateDiscountPreview()" placeholder="Ex: 120.00" class="w-full px-3.5 py-2 border border-amber-300 rounded-lg text-sm bg-white outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Preço Social para ONG (R$) *</label>
+                <input type="number" id="cadSocialPrice" min="0.5" step="0.01" oninput="updateDiscountPreview()" placeholder="Ex: 18.00" class="w-full px-3.5 py-2 border border-amber-300 rounded-lg text-sm bg-white outline-none" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Datas e Janela de Retirada -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">Prazos, Janela de Retirada e Validade</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Data Limite para Retirada *</label>
+                <input type="date" id="cadDeadlineDate" required class="w-full px-3.5 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-emerald-500 outline-none" />
+                <p class="text-[11px] text-slate-500 mt-1">Data máxima em que o instituto pode retirar o lote.</p>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Data de Validade do Produto *</label>
+                <input type="date" id="cadExpiryDate" required class="w-full px-3.5 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-emerald-500 outline-none" />
+                <p class="text-[11px] text-slate-500 mt-1">Deve ser igual ou posterior à data limite de retirada.</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Horário Inicial da Janela *</label>
+                <input type="time" id="cadWindowStart" value="14:00" required class="w-full px-3.5 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-emerald-500 outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Horário Final da Janela *</label>
+                <input type="time" id="cadWindowEnd" value="18:30" required class="w-full px-3.5 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-emerald-500 outline-none" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Termo Sanitário -->
+          <label class="flex items-start gap-3 p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-xl cursor-pointer">
+            <input type="checkbox" id="cadSanitaryCheck" required class="mt-1 w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500" />
+            <span class="text-xs text-slate-700 leading-relaxed">
+              <strong>Termo de Responsabilidade Sanitária:</strong> Declaro que os alimentos listados encontram-se armazenados em condições adequadas de higiene e temperatura, íntegros e próprios para o consumo humano dentro do prazo de validade informado.
+            </span>
+          </label>
+
+          <div id="cadErrorMsg" class="hidden text-xs font-semibold text-red-700 bg-red-50 border border-red-200 px-4 py-2.5 rounded-xl"></div>
+
+          <div class="flex justify-end gap-3 pt-2">
+            <button type="button" onclick="switchTab('vitrine')" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">Cancelar</button>
+            <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition">Publicar Lote na Vitrine</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ==================== ABA 3: MINHAS RESERVAS ==================== -->
+    <section id="view-reservas" class="hidden space-y-6">
+      <div>
+        <h2 class="text-2xl font-extrabold text-slate-900">Reservas e Comprovantes de Retirada</h2>
+        <p class="text-sm text-slate-600 mt-1">Acompanhe os prazos limite de retirada, visualize o voucher oficial e confirme o recebimento dos alimentos pela instituição.</p>
+      </div>
+
+      <div id="reservasList" class="space-y-4"></div>
+    </section>
+
+    <!-- ==================== ABA 4: PAINEL DE IMPACTO (ODS) ==================== -->
+    <section id="view-impacto" class="hidden space-y-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-extrabold text-slate-900">Indicadores de Impacto Social e Ambiental</h2>
+          <p class="text-sm text-slate-600 mt-1">Monitoramento em tempo real alinhado às metas brasileiras dos Objetivos de Desenvolvimento Sustentável (IPEA / Agenda 2030).</p>
+        </div>
+        <button onclick="resetDemoData()" class="self-start sm:self-auto px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Restaurar Dados de Demonstração
+        </button>
+      </div>
+
+      <!-- KPIs -->
+      <div id="kpiGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+
+      <!-- Distribuição e ODS -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <h3 class="text-base font-bold text-slate-900">Volume Resgatado por Categoria Alimentar</h3>
+          <div id="categoryBars" class="space-y-4"></div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <h3 class="text-base font-bold text-slate-900">Alinhamento com a Agenda 2030 (ONU / IPEA)</h3>
+          <div class="space-y-3 text-xs text-slate-700">
+            <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200">
+              <div class="font-bold text-amber-900 text-sm">ODS 2 — Fome Zero e Agricultura Sustentável</div>
+              <p class="mt-1">Amplia o acesso de famílias vulneráveis atendidas por ONGs a alimentos frescos, seguros e nutricionalmente adequados.</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200">
+              <div class="font-bold text-rose-900 text-sm">ODS 10 — Redução das Desigualdades</div>
+              <p class="mt-1">Reduz custos operacionais de cozinhas comunitárias e institutos sociais por meio de doações e preços simbólicos.</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200">
+              <div class="font-bold text-emerald-900 text-sm">ODS 12 — Consumo e Produção Responsáveis</div>
+              <p class="mt-1">Evita o descarte precoce de alimentos próprios para consumo no varejo local, diminuindo resíduos orgânicos.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <span><strong>VALOREM</strong> — Projeto de Extensão Universitária • Cocriação e Desenvolvimento de Projetos</span>
+      <span>Segurança Alimentar, Tecnologia Social e Redução do Desperdício</span>
+    </div>
+  </footer>
+
+  <!-- ==================== MODAL DE RESERVA (ONG / INSTITUTO) ==================== -->
+  <div id="reserveModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden my-8">
+      <div class="bg-emerald-900 px-6 py-4 text-white flex items-center justify-between">
+        <div>
+          <span class="text-[11px] uppercase tracking-wider text-emerald-300 font-semibold">Solicitação de Resgate Institucional</span>
+          <h3 class="text-lg font-bold">Reservar Lote de Alimentos</h3>
+        </div>
+        <button onclick="closeReserveModal()" class="text-emerald-200 hover:text-white p-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form onsubmit="handleConfirmReserve(event)" class="p-6 space-y-4">
+        <div id="modalItemSummary" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs space-y-1.5"></div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nome da ONG / Instituto Social *</label>
+          <input type="text" id="resOrgName" required placeholder="Ex: Instituto Mãos Solidárias" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">CNPJ ou Registro Social *</label>
+            <input type="text" id="resOrgDoc" required placeholder="00.000.000/0001-00" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Telefone / WhatsApp *</label>
+            <input type="text" id="resPhone" required placeholder="(11) 99999-0000" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Responsável pela Retirada no Local *</label>
+          <input type="text" id="resPerson" required placeholder="Nome completo de quem vai retirar" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Data Prevista para Retirada *</label>
+            <input type="date" id="resPickupDate" required class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Horário Estimado *</label>
+            <input type="time" id="resPickupTime" required class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+          </div>
+        </div>
+
+        <div id="resErrorMsg" class="hidden text-xs font-semibold text-red-700 bg-red-50 border border-red-200 px-3.5 py-2 rounded-xl"></div>
+
+        <div class="flex justify-end gap-2.5 pt-2">
+          <button type="button" onclick="closeReserveModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Cancelar</button>
+          <button type="submit" class="px-5 py-2 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow">Gerar Comprovante de Reserva</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL DE COMPROVANTE (VOUCHER) ==================== -->
+  <div id="voucherModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden my-8">
+      <div id="voucherPrintArea" class="p-6 space-y-5">
+        <div class="flex items-center justify-between border-b border-dashed border-slate-300 pb-4">
+          <div>
+            <span class="text-xs font-extrabold tracking-widest uppercase text-emerald-700">VALOREM • Comprovante Oficial</span>
+            <h3 class="text-xl font-extrabold text-slate-900 mt-0.5">Autorização de Retirada</h3>
+          </div>
+          <div class="text-right">
+            <span class="block text-[11px] text-slate-500 uppercase">Código do Voucher</span>
+            <span id="voucherCodeDisplay" class="font-mono text-base font-extrabold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200"></span>
+          </div>
+        </div>
+
+        <div id="voucherBody" class="space-y-3 text-sm"></div>
+
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-[11px] text-slate-600 leading-relaxed">
+          Apresente este código no balcão do estabelecimento parceiro dentro da <strong>data limite</strong> e da <strong>janela de horário</strong> estabelecidas. Após o prazo limite, o lote poderá ser redirecionado para outra entidade cadastrada.
+        </div>
+      </div>
+
+      <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex justify-between items-center no-print">
+        <button onclick="window.print()" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-900 text-white flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          Imprimir / Salvar PDF
+        </button>
+        <button onclick="closeVoucherModal()" class="px-5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white">Concluir</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== UTILITÁRIOS DE DATA (SEM DESVIO DE FUSO UTC) ====================
+    function getTodayISO() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function addDaysISO(daysToAdd) {
+      const now = new Date();
+      now.setDate(now.getDate() + daysToAdd);
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function formatDateBR(isoDate) {
+      if (!isoDate || !isoDate.includes('-')) return isoDate || '';
+      const [y, m, d] = isoDate.split('-');
+      return `${d}/${m}/${y}`;
+    }
+
+    function getDeadlineBadge(deadlineDate, windowEnd) {
+      const today = getTodayISO();
+      if (deadlineDate === today) {
+        return {
+          text: `Vence hoje até ${windowEnd}`,
+          classes: 'bg-red-100 text-red-800 border-red-200'
+        };
+      }
+      if (deadlineDate < today) {
+        return {
+          text: `Prazo encerrado em ${formatDateBR(deadlineDate)}`,
+          classes: 'bg-slate-200 text-slate-700 border-slate-300'
+        };
+      }
+      return {
+        text: `Prazo: até ${formatDateBR(deadlineDate)}`,
+        classes: 'bg-sky-100 text-sky-800 border-sky-200'
+      };
+    }
+
+    // ==================== DADOS INICIAIS DE DEMONSTRAÇÃO ====================
+    function buildInitialItems() {
+      return [
+        {
+          id: 'item-1',
+          title: 'Caixa Mista de Hortifrúti (Tomate, Cenoura, Abobrinha e Folhas)',
+          category: 'Hortifrúti',
+          store: 'Sacolão & Hortifrúti Boa Colheita',
+          address: 'Centro — Av. Antônio Piranga, 420',
+          weight: 28,
+          modality: 'doacao',
+          originalPrice: 145.00,
+          socialPrice: 0,
+          deadlineDate: getTodayISO(),
+          windowStart: '15:00',
+          windowEnd: '19:00',
+          expiryDate: addDaysISO(2),
+          reserved: false
+        },
+        {
+          id: 'item-2',
+          title: 'Lote de Pães Franceses, Integrais e Bolos Simples do Dia',
+          category: 'Padaria',
+          store: 'Padaria Artesanal Pão Dourado',
+          address: 'Vila Conceição — Rua Manoel da Nóbrega, 118',
+          weight: 14,
+          modality: 'doacao',
+          originalPrice: 110.00,
+          socialPrice: 0,
+          deadlineDate: getTodayISO(),
+          windowStart: '18:00',
+          windowEnd: '20:30',
+          expiryDate: addDaysISO(1),
+          reserved: false
+        },
+        {
+          id: 'item-3',
+          title: 'Fardos de Arroz Tipo 1 (5kg) e Feijão Carioca (Embalagem Levemente Amassada)',
+          category: 'Mercearia',
+          store: 'Supermercado Família Unidas',
+          address: 'Jardim Canhema — Av. Nossa Senhora das Graças, 890',
+          weight: 45,
+          modality: 'social',
+          originalPrice: 310.00,
+          socialPrice: 45.00,
+          deadlineDate: addDaysISO(2),
+          windowStart: '09:00',
+          windowEnd: '17:00',
+          expiryDate: addDaysISO(45),
+          reserved: false
+        },
+        {
+          id: 'item-4',
+          title: 'Bandejas de Iogurte Natural e Leite Pasteurizado Integral',
+          category: 'Laticínios',
+          store: 'Empório Lácteo & Frios Serramar',
+          address: 'Serraria — Rua Guarani, 305',
+          weight: 18,
+          modality: 'social',
+          originalPrice: 160.00,
+          socialPrice: 22.00,
+          deadlineDate: addDaysISO(1),
+          windowStart: '10:00',
+          windowEnd: '16:00',
+          expiryDate: addDaysISO(3),
+          reserved: false
+        },
+        {
+          id: 'item-5',
+          title: 'Sacos de Batata Inglesa, Cebola e Banana Nanica Madura',
+          category: 'Hortifrúti',
+          store: 'Distribuidora Verde Campo',
+          address: 'Piraporinha — Rua Fagundes de Oliveira, 512',
+          weight: 35,
+          modality: 'doacao',
+          originalPrice: 175.00,
+          socialPrice: 0,
+          deadlineDate: addDaysISO(1),
+          windowStart: '13:00',
+          windowEnd: '17:30',
+          expiryDate: addDaysISO(3),
+          reserved: false
+        },
+        {
+          id: 'item-6',
+          title: 'Kit Mercearia Seca (Macarrão, Molho de Tomate e Farinha de Milho)',
+          category: 'Mercearia',
+          store: 'Atacadista Preço Justo',
+          address: 'Taboão — Av. Água Funda, 1020',
+          weight: 30,
+          modality: 'social',
+          originalPrice: 210.00,
+          socialPrice: 30.00,
+          deadlineDate: addDaysISO(3),
+          windowStart: '08:30',
+          windowEnd: '17:30',
+          expiryDate: addDaysISO(30),
+          reserved: false
+        }
+      ];
+    }
+
+    const STORAGE_ITEMS_KEY = 'valorem_items_v2';
+    const STORAGE_RESERVATIONS_KEY = 'valorem_reservations_v2';
+
+    let items = JSON.parse(localStorage.getItem(STORAGE_ITEMS_KEY)) || buildInitialItems();
+    let reservations = JSON.parse(localStorage.getItem(STORAGE_RESERVATIONS_KEY)) || [];
+    let selectedItemId = null;
+
+    function saveState() {
+      localStorage.setItem(STORAGE_ITEMS_KEY, JSON.stringify(items));
+      localStorage.setItem(STORAGE_RESERVATIONS_KEY, JSON.stringify(reservations));
+      updateReservationBadge();
+    }
+
+    function resetDemoData() {
+      items = buildInitialItems();
+      reservations = [];
+      saveState();
+      renderVitrine();
+      renderReservas();
+      renderImpacto();
+      alert('Os dados de demonstração foram restaurados com datas atualizadas.');
+    }
+
+    // ==================== NAVEGAÇÃO ENTRE ABAS ====================
+    function switchTab(tabName) {
+      const views = ['vitrine', 'cadastrar', 'reservas', 'impacto'];
+      views.forEach(v => {
+        document.getElementById(`view-${v}`).classList.add('hidden');
+        const btn = document.getElementById(`tab-${v}`);
+        btn.classList.remove('bg-emerald-500', 'text-emerald-950', 'shadow');
+        btn.classList.add('text-emerald-100', 'hover:bg-emerald-800/70');
+      });
+
+      document.getElementById(`view-${tabName}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tab-${tabName}`);
+      activeBtn.classList.remove('text-emerald-100', 'hover:bg-emerald-800/70');
+      activeBtn.classList.add('bg-emerald-500', 'text-emerald-950', 'shadow');
+
+      if (tabName === 'vitrine') renderVitrine();
+      if (tabName === 'reservas') renderReservas();
+      if (tabName === 'impacto') renderImpacto();
+    }
+
+    function updateReservationBadge() {
+      document.getElementById('badgeReservas').textContent = reservations.length;
+    }
+
+    // ==================== RENDERIZAR VITRINE ====================
+    function renderVitrine() {
+      const grid = document.getElementById('vitrineGrid');
+      const search = document.getElementById('searchInput').value.trim().toLowerCase();
+      const modFilter = document.getElementById('filterModality').value;
+      const catFilter = document.getElementById('filterCategory').value;
+
+      const filtered = items.filter(item => {
+        const matchesSearch =
+          item.title.toLowerCase().includes(search) ||
+          item.store.toLowerCase().includes(search) ||
+          item.address.toLowerCase().includes(search);
+        const matchesMod = modFilter === 'all' || item.modality === modFilter;
+        const matchesCat = catFilter === 'all' || item.category === catFilter;
+        return matchesSearch && matchesMod && matchesCat;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full bg-white border border-slate-200 rounded-2xl p-10 text-center">
+            <p class="text-slate-600 font-semibold">Nenhum lote encontrado com os filtros selecionados.</p>
+            <p class="text-xs text-slate-400 mt-1">Tente limpar a busca ou cadastrar um novo excedente na aba "Cadastrar Excedente".</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const badge = getDeadlineBadge(item.deadlineDate, item.windowEnd);
+        const isDoacao = item.modality === 'doacao';
+        const discountPct = !isDoacao && item.originalPrice > 0
+          ? Math.round(((item.originalPrice - item.socialPrice) / item.originalPrice) * 100)
+          : 100;
+
+        return `
+          <article class="bg-white rounded-2xl border ${item.reserved ? 'border-slate-200 opacity-80' : 'border-slate-200 hover:border-emerald-400 hover:shadow-md'} transition flex flex-col justify-between overflow-hidden">
+            <div class="p-5 space-y-4">
+              <!-- Topo com badges -->
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700">${item.category}</span>
+                <span class="text-xs font-bold px-2.5 py-1 rounded-full border ${badge.classes}">
+                  ${badge.text}
+                </span>
+              </div>
+
+              <!-- Título e Estabelecimento -->
+              <div>
+                <h3 class="font-bold text-slate-900 text-base leading-snug">${item.title}</h3>
+                <p class="text-xs font-semibold text-emerald-800 mt-1.5 flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                  ${item.store}
+                </p>
+                <p class="text-[11px] text-slate-500 mt-0.5">${item.address}</p>
+              </div>
+
+              <!-- Bloco de Datas e Janela -->
+              <div class="bg-slate-50 rounded-xl p-3 border border-slate-200/80 space-y-1.5 text-xs">
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Quantidade / Peso:</span>
+                  <span class="font-bold text-slate-800">${item.weight} kg</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Data Limite Retirada:</span>
+                  <span class="font-bold text-slate-900">Retirar até ${formatDateBR(item.deadlineDate)}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Janela de Horário:</span>
+                  <span class="font-semibold text-slate-800">${item.windowStart} às ${item.windowEnd}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Validade do Produto:</span>
+                  <span class="font-semibold text-emerald-800">${formatDateBR(item.expiryDate)}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rodapé Preço & Botão -->
+            <div class="px-5 py-4 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-3">
+              <div>
+                ${isDoacao ? `
+                  <span class="inline-block text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Doação Gratuita</span>
+                  <div class="text-lg font-extrabold text-emerald-700 mt-0.5">R$ 0,00</div>
+                ` : `
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[11px] line-through text-slate-400">R$ ${item.originalPrice.toFixed(2).replace('.', ',')}</span>
+                    <span class="text-[10px] font-bold bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded">-${discountPct}%</span>
+                  </div>
+                  <div class="text-lg font-extrabold text-amber-700">R$ ${item.socialPrice.toFixed(2).replace('.', ',')}</div>
+                `}
+              </div>
+
+              ${item.reserved ? `
+                <span class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-200 text-slate-600 cursor-not-allowed">
+                  Lote Reservado
+                </span>
+              ` : `
+                <button onclick="openReserveModal('${item.id}')" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition">
+                  Reservar Lote
+                </button>
+              `}
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    // ==================== CADASTRO DE EXCEDENTE ====================
+    function togglePriceFields() {
+      const modality = document.getElementById('cadModality').value;
+      const box = document.getElementById('socialPriceBox');
+      const origInput = document.getElementById('cadOriginalPrice');
+      const socInput = document.getElementById('cadSocialPrice');
+
+      if (modality === 'social') {
+        box.classList.remove('hidden');
+        origInput.required = true;
+        socInput.required = true;
+      } else {
+        box.classList.add('hidden');
+        origInput.required = false;
+        socInput.required = false;
+      }
+    }
+
+    function updateDiscountPreview() {
+      const orig = parseFloat(document.getElementById('cadOriginalPrice').value) || 0;
+      const soc = parseFloat(document.getElementById('cadSocialPrice').value) || 0;
+      const badge = document.getElementById('discountPreview');
+      if (orig > 0 && soc >= 0 && soc < orig) {
+        const pct = Math.round(((orig - soc) / orig) * 100);
+        badge.textContent = `Desconto: ${pct}%`;
+      } else {
+        badge.textContent = 'Desconto: 0%';
+      }
+    }
+
+    function handleCreateItem(e) {
+      e.preventDefault();
+      const errBox = document.getElementById('cadErrorMsg');
+      errBox.classList.add('hidden');
+
+      const today = getTodayISO();
+      const modality = document.getElementById('cadModality').value;
+      const weight = parseFloat(document.getElementById('cadWeight').value);
+      const originalPrice = modality === 'social'
+        ? parseFloat(document.getElementById('cadOriginalPrice').value)
+        : Math.round(weight * 5.5);
+      const socialPrice = modality === 'social'
+        ? parseFloat(document.getElementById('cadSocialPrice').value)
+        : 0;
+      const deadlineDate = document.getElementById('cadDeadlineDate').value;
+      const expiryDate = document.getElementById('cadExpiryDate').value;
+      const windowStart = document.getElementById('cadWindowStart').value;
+      const windowEnd = document.getElementById('cadWindowEnd').value;
+
+      if (deadlineDate < today) {
+        errBox.textContent = 'A data limite para retirada não pode ser anterior à data de hoje.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      if (expiryDate < deadlineDate) {
+        errBox.textContent = 'A data de validade do produto deve ser igual ou posterior à data limite de retirada.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      if (windowEnd <= windowStart) {
+        errBox.textContent = 'O horário final da janela de retirada deve ser posterior ao horário inicial.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      if (modality === 'social' && socialPrice >= originalPrice) {
+        errBox.textContent = 'O preço social deve ser menor que o valor original de mercado.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      const newItem = {
+        id: 'item-' + Date.now(),
+        title: document.getElementById('cadTitle').value.trim(),
+        category: document.getElementById('cadCategory').value,
+        store: document.getElementById('cadStore').value.trim(),
+        address: document.getElementById('cadAddress').value.trim(),
+        weight,
+        modality,
+        originalPrice,
+        socialPrice,
+        deadlineDate,
+        windowStart,
+        windowEnd,
+        expiryDate,
+        reserved: false
+      };
+
+      items.unshift(newItem);
+      saveState();
+      e.target.reset();
+      initDefaultFormDates();
+      togglePriceFields();
+      switchTab('vitrine');
+    }
+
+    // ==================== MODAL DE RESERVA ====================
+    function openReserveModal(itemId) {
+      const item = items.find(i => i.id === itemId);
+      if (!item) return;
+
+      selectedItemId = itemId;
+      const today = getTodayISO();
+      const errBox = document.getElementById('resErrorMsg');
+      errBox.classList.add('hidden');
+
+      document.getElementById('modalItemSummary').innerHTML = `
+        <div class="font-bold text-slate-900 text-sm">${item.title}</div>
+        <div class="text-slate-600"><strong>Estabelecimento:</strong> ${item.store} (${item.address})</div>
+        <div class="text-slate-600"><strong>Quantidade:</strong> ${item.weight} kg • <strong>Modalidade:</strong> ${item.modality === 'doacao' ? 'Doação Gratuita' : 'Preço Social (R$ ' + item.socialPrice.toFixed(2).replace('.', ',') + ')'}</div>
+        <div class="mt-2 p-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-950 font-semibold">
+          Prazo limite da plataforma: até ${formatDateBR(item.deadlineDate)} às ${item.windowEnd} (Janela: ${item.windowStart} às ${item.windowEnd})
+        </div>
+      `;
+
+      const dateInput = document.getElementById('resPickupDate');
+      dateInput.min = today;
+      dateInput.max = item.deadlineDate;
+      dateInput.value = item.deadlineDate >= today ? item.deadlineDate : today;
+
+      const timeInput = document.getElementById('resPickupTime');
+      timeInput.value = item.windowStart;
+
+      document.getElementById('reserveModal').classList.remove('hidden');
+    }
+
+    function closeReserveModal() {
+      document.getElementById('reserveModal').classList.add('hidden');
+      selectedItemId = null;
+    }
+
+    function handleConfirmReserve(e) {
+      e.preventDefault();
+      const item = items.find(i => i.id === selectedItemId);
+      if (!item) return;
+
+      const errBox = document.getElementById('resErrorMsg');
+      errBox.classList.add('hidden');
+
+      const today = getTodayISO();
+      const pickupDate = document.getElementById('resPickupDate').value;
+      const pickupTime = document.getElementById('resPickupTime').value;
+
+      if (pickupDate < today || pickupDate > item.deadlineDate) {
+        errBox.textContent = `A data prevista deve estar entre hoje (${formatDateBR(today)}) e a data limite (${formatDateBR(item.deadlineDate)}).`;
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      if (pickupTime < item.windowStart || pickupTime > item.windowEnd) {
+        errBox.textContent = `O horário estimado deve estar dentro da janela do comércio (${item.windowStart} às ${item.windowEnd}).`;
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      const randomDigits = Math.floor(1000 + Math.random() * 9000);
+      const voucherCode = `VLR-2026-${randomDigits}`;
+
+      const reservation = {
+        id: 'res-' + Date.now(),
+        voucherCode,
+        itemId: item.id,
+        itemTitle: item.title,
+        category: item.category,
+        store: item.store,
+        address: item.address,
+        weight: item.weight,
+        modality: item.modality,
+        originalPrice: item.originalPrice,
+        socialPrice: item.socialPrice,
+        deadlineDate: item.deadlineDate,
+        windowStart: item.windowStart,
+        windowEnd: item.windowEnd,
+        expiryDate: item.expiryDate,
+        orgName: document.getElementById('resOrgName').value.trim(),
+        orgDoc: document.getElementById('resOrgDoc').value.trim(),
+        phone: document.getElementById('resPhone').value.trim(),
+        person: document.getElementById('resPerson').value.trim(),
+        pickupDate,
+        pickupTime,
+        status: 'aguardando'
+      };
+
+      item.reserved = true;
+      reservations.unshift(reservation);
+      saveState();
+
+      e.target.reset();
+      closeReserveModal();
+      renderVitrine();
+      openVoucherModal(reservation.id);
+    }
+
+    // ==================== COMPROVANTE (VOUCHER) ====================
+    function openVoucherModal(resId) {
+      const res = reservations.find(r => r.id === resId);
+      if (!res) return;
+
+      const badge = getDeadlineBadge(res.deadlineDate, res.windowEnd);
+      document.getElementById('voucherCodeDisplay').textContent = res.voucherCode;
+
+      document.getElementById('voucherBody').innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-2 bg-emerald-50 border border-emerald-200 p-3 rounded-xl">
+          <span class="text-xs font-extrabold uppercase text-emerald-900">
+            Status: ${res.status === 'concluida' ? 'Retirada Concluída' : 'Aguardando Retirada'}
+          </span>
+          <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${badge.classes}">
+            ${badge.text}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="p-3 rounded-xl border border-slate-200">
+            <span class="text-slate-400 uppercase font-bold block">Instituição Beneficiária</span>
+            <strong class="text-slate-900 text-sm block mt-0.5">${res.orgName}</strong>
+            <span class="text-slate-600 block">Doc: ${res.orgDoc}</span>
+            <span class="text-slate-600 block">Resp.: ${res.person} (${res.phone})</span>
+          </div>
+
+          <div class="p-3 rounded-xl border border-slate-200">
+            <span class="text-slate-400 uppercase font-bold block">Local de Retirada</span>
+            <strong class="text-slate-900 text-sm block mt-0.5">${res.store}</strong>
+            <span class="text-slate-600 block">${res.address}</span>
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1.5">
+          <div class="flex justify-between"><span class="text-slate-500">Lote Reservado:</span><strong class="text-slate-900 text-right">${res.itemTitle} (${res.weight} kg)</strong></div>
+          <div class="flex justify-between"><span class="text-slate-500">Data Limite para Retirada:</span><strong class="text-red-700">Até ${formatDateBR(res.deadlineDate)}</strong></div>
+          <div class="flex justify-between"><span class="text-slate-500">Janela de Horário:</span><strong class="text-slate-800">${res.windowStart} às ${res.windowEnd}</strong></div>
+          <div class="flex justify-between"><span class="text-slate-500">Agendado pela Instituição:</span><strong class="text-emerald-800">${formatDateBR(res.pickupDate)} às ${res.pickupTime}</strong></div>
+          <div class="flex justify-between"><span class="text-slate-500">Validade do Produto:</span><strong class="text-slate-800">${formatDateBR(res.expiryDate)}</strong></div>
+          <div class="flex justify-between"><span class="text-slate-500">Valor a Pagar no Local:</span><strong class="text-slate-900">${res.modality === 'doacao' ? 'R$ 0,00 (Doação Gratuita)' : 'R$ ' + res.socialPrice.toFixed(2).replace('.', ',')}</strong></div>
+        </div>
+      `;
+
+      document.getElementById('voucherModal').classList.remove('hidden');
+    }
+
+    function closeVoucherModal() {
+      document.getElementById('voucherModal').classList.add('hidden');
+    }
+
+    // ==================== ABA MINHAS RESERVAS ====================
+    function confirmPickup(resId) {
+      const res = reservations.find(r => r.id === resId);
+      if (!res) return;
+      res.status = 'concluida';
+      saveState();
+      renderReservas();
+      renderImpacto();
+    }
+
+    function renderReservas() {
+      const container = document.getElementById('reservasList');
+
+      if (reservations.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white border border-slate-200 rounded-2xl p-10 text-center space-y-3">
+            <p class="text-slate-700 font-bold">Nenhuma reserva realizada até o momento.</p>
+            <p class="text-xs text-slate-500">Acesse a Vitrine de Alimentos e clique em "Reservar Lote" para gerar um comprovante de retirada.</p>
+            <button onclick="switchTab('vitrine')" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white">Ir para Vitrine</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = reservations.map(res => {
+        const badge = getDeadlineBadge(res.deadlineDate, res.windowEnd);
+        const isDone = res.status === 'concluida';
+
+        return `
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="space-y-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="font-mono text-xs font-extrabold bg-slate-900 text-white px-2.5 py-1 rounded-lg">${res.voucherCode}</span>
+                <span class="text-xs font-bold px-2.5 py-1 rounded-full ${isDone ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">
+                  ${isDone ? 'Retirada Concluída' : 'Aguardando Retirada'}
+                </span>
+                ${!isDone ? `<span class="text-xs font-bold px-2.5 py-1 rounded-full border ${badge.classes}">${badge.text}</span>` : ''}
+              </div>
+
+              <h3 class="font-bold text-slate-900 text-base">${res.itemTitle} (${res.weight} kg)</h3>
+              <p class="text-xs text-slate-600"><strong>Instituição:</strong> ${res.orgName} • <strong>Estabelecimento:</strong> ${res.store}</p>
+
+              <div class="flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-600 pt-1">
+                <span><strong>Data Limite:</strong> Até ${formatDateBR(res.deadlineDate)}</span>
+                <span><strong>Janela:</strong> ${res.windowStart} às ${res.windowEnd}</span>
+                <span><strong>Agendado:</strong> ${formatDateBR(res.pickupDate)} às ${res.pickupTime}</span>
+                <span><strong>Validade:</strong> ${formatDateBR(res.expiryDate)}</span>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5 shrink-0">
+              <button onclick="openVoucherModal('${res.id}')" class="px-4 py-2 rounded-xl text-xs font-bold border border-slate-300 hover:bg-slate-50 text-slate-700">
+                Ver Comprovante
+              </button>
+              ${!isDone ? `
+                <button onclick="confirmPickup('${res.id}')" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs">
+                  Confirmar Retirada
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==================== ABA PAINEL DE IMPACTO ====================
+    function renderImpacto() {
+      const reservedOrDone = items.filter(i => i.reserved);
+      const baseHistoricalKg = 420; // Histórico piloto acumulado
+      const currentKg = reservedOrDone.reduce((acc, i) => acc + i.weight, 0);
+      const totalKg = baseHistoricalKg + currentKg;
+
+      const totalMeals = Math.round(totalKg * 2); // Estimativa média de 500g por refeição completa
+      const baseSavings = 2480;
+      const currentSavings = reservedOrDone.reduce((acc, i) => acc + (i.originalPrice - i.socialPrice), 0);
+      const totalSavings = baseSavings + currentSavings;
+      const uniqueStores = new Set(items.map(i => i.store)).size;
+
+      document.getElementById('kpiGrid').innerHTML = `
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <span class="text-xs font-bold uppercase text-slate-400">Alimentos Salvos</span>
+          <div class="text-3xl font-extrabold text-emerald-700 mt-1">${totalKg.toLocaleString('pt-BR')} kg</div>
+          <p class="text-xs text-slate-500 mt-1">Evitados do descarte no varejo</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <span class="text-xs font-bold uppercase text-slate-400">Refeições Viabilizadas</span>
+          <div class="text-3xl font-extrabold text-sky-700 mt-1">${totalMeals.toLocaleString('pt-BR')}</div>
+          <p class="text-xs text-slate-500 mt-1">Estimativa nutricional (ODS 2)</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <span class="text-xs font-bold uppercase text-slate-400">Economia para ONGs</span>
+          <div class="text-3xl font-extrabold text-amber-600 mt-1">R$ ${totalSavings.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+          <p class="text-xs text-slate-500 mt-1">Diferença frente ao preço de mercado</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <span class="text-xs font-bold uppercase text-slate-400">Comércios Conectados</span>
+          <div class="text-3xl font-extrabold text-slate-800 mt-1">${uniqueStores}</div>
+          <p class="text-xs text-slate-500 mt-1">Estabelecimentos ativos na rede</p>
+        </div>
+      `;
+
+      const categories = ['Hortifrúti', 'Padaria', 'Mercearia', 'Laticínios'];
+      const baseCatWeights = { 'Hortifrúti': 180, 'Padaria': 75, 'Mercearia': 110, 'Laticínios': 55 };
+
+      const catTotals = categories.map(cat => {
+        const dynamicWeight = reservedOrDone
+          .filter(i => i.category === cat)
+          .reduce((sum, i) => sum + i.weight, 0);
+        return { name: cat, weight: baseCatWeights[cat] + dynamicWeight };
+      });
+
+      const maxWeight = Math.max(...catTotals.map(c => c.weight), 1);
+
+      document.getElementById('categoryBars').innerHTML = catTotals.map(cat => {
+        const pct = Math.round((cat.weight / maxWeight) * 100);
+        return `
+          <div>
+            <div class="flex justify-between text-xs font-semibold mb-1">
+              <span class="text-slate-700">${cat.name}</span>
+              <span class="text-emerald-800 font-bold">${cat.weight} kg</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+              <div class="bg-emerald-600 h-2.5 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==================== INICIALIZAÇÃO ====================
+    function initDefaultFormDates() {
+      const today = getTodayISO();
+      const tomorrow = addDaysISO(1);
+      const threeDays = addDaysISO(3);
+
+      const deadlineInput = document.getElementById('cadDeadlineDate');
+      const expiryInput = document.getElementById('cadExpiryDate');
+
+      deadlineInput.min = today;
+      deadlineInput.value = tomorrow;
+
+      expiryInput.min = today;
+      expiryInput.value = threeDays;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('headerCurrentDate').textContent = `Data do sistema: ${formatDateBR(getTodayISO())}`;
+      initDefaultFormDates();
+      updateReservationBadge();
+      renderVitrine();
+    });
+  </script>
+</body>
+</html>
